@@ -1,0 +1,6 @@
+VOMLUME = db and wordpress VOLUMES live outside of docker and persist outside of their isntances, so website
+can hold images and text and stuff without losing intra-session
+
+.env used when?
+
+first make VM w VirtualBox (with GUI). Need to because need to be root. Don't have that at school.
