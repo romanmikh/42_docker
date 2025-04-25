@@ -7,9 +7,15 @@
 -- User password: wordpress_pass
 -- Host: %, means that the user can connect from any host
 
-CREATE DATABASE IF NOT EXISTS wordpress_db;
-CREATE USER IF NOT EXISTS 'wordpress_user'@'%' IDENTIFIED BY 'wordpress_pass';
-GRANT ALL PRIVILEGES ON wordpress_db.* TO 'wordpress_user'@'%';
+CREATE DATABASE IF NOT EXISTS ${MYSQL_DATABASE};
+
+-- main WordPress user
+CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'%' IDENTIFIED BY '${USER_PASS}';
+GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'%';
+
+-- additional admin user
+CREATE USER IF NOT EXISTS '${MYSQL_ADMIN}'@'%' IDENTIFIED BY '${ADMIN_PASS}';
+GRANT ALL PRIVILEGES ON *.* TO '${MYSQL_ADMIN}'@'%' WITH GRANT OPTION;
 
 -- tells mariaDB to reload user permissions immediately (like the new user added)
 -- it's best practice at end of CREATE USER / GRANT scripts

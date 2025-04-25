@@ -7,12 +7,21 @@ FROM alpine:3.18
 
 # apk = alpine package manager, --no-cache keeps image size small (no temp files)
 # mariadb = server, mariadb-client = client binary needed to execute SQL
-RUN apk add --no-cache mariadb mariadb-client
+RUN apk add --no-cache mariadb mariadb-client envsubst
 
 # official MariaDB image looks for .sql or .sh files in /docker-entrypoint-initdb.d/
 # that's forbidden, so we mimic this behavior manually
 COPY tools/ /docker-entrypoint-initdb.d/
-COPY tools/init.sql /init.sql
+# COPY tools/init.sql /init.sql
+COPY tools/init.sql.template /init.sql.template
+# needed to replace ${} with env vars
+RUN apk add --no-cache gettext \
+    && envsubst < /init.sql.template > /init.sql
+
+COPY tools/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+
 
 # /run/mysqld is where MariaDB stores its PID & socket files — refuses to start without it
 RUN mkdir -p /run/mysqld && chown -R mysql:mysql /run/mysqld

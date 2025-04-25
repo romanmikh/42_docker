@@ -80,7 +80,8 @@ RUN echo "display_errors = On" >> /usr/local/etc/php/php.ini \
     && echo "error_log = /proc/self/fd/2" >> /usr/local/etc/php/php.ini
 
 EXPOSE 9000
-CMD ["php-fpm"]
+# CMD ["php-fpm"]
+CMD ["php-fpm", "-F"]
 
 
 

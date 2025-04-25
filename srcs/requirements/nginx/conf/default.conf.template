@@ -1,8 +1,8 @@
-# new version to show html instead of php in browser for the 'famout 5 minute wordpress configuration'
+# show html instead of php in browser for the 'famout 5 minute wordpress configuration'
 
 server {
     listen 443 ssl;
-    server_name localhost;
+    server_name ${DOMAIN};
 
     ssl_certificate /etc/nginx/ssl/nginx.crt;
     ssl_certificate_key /etc/nginx/ssl/nginx.key;
@@ -27,19 +27,3 @@ server {
         deny all;
     }
 }
-# server {
-#     listen 443 ssl;
-#     server_name localhost;
-
-#     ssl_certificate /etc/nginx/ssl/nginx.crt;
-#     ssl_certificate_key /etc/nginx/ssl/nginx.key;
-#     ssl_protocols TLSv1.2 TLSv1.3;
-
-#     location / {
-#         include fastcgi_params;
-#         fastcgi_pass wordpress:9000;
-#         fastcgi_index index.php;
-#         fastcgi_param SCRIPT_FILENAME /var/www/html/index.php;
-#         root /var/www/html;
-#     }
-# }

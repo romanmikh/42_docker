@@ -8,33 +8,33 @@ services:
     build: ./requirements/mariadb
     container_name: mariadb
     restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: wordpress_db
-      MYSQL_USER: wordpress_user
-      MYSQL_PASSWORD: wordpress_pass
+    env_file: .env
     volumes:
       - mariadb_data:/var/lib/mysql
+    secrets:
+      - db_user_password
+      - db_admin_password
+      - db_root_password
 
   wordpress:
     build: ./requirements/wordpress
     container_name: wordpress
     restart: always
+    # tells WordPress to connect to MariaDB container
     depends_on:
       - mariadb
-    # tells WordPress to connect to MariaDB container
-    environment:
-      WORDPRESS_DB_HOST: mariadb:3306
-      WORDPRESS_DB_NAME: wordpress_db
-      WORDPRESS_DB_USER: wordpress_user
-      WORDPRESS_DB_PASSWORD: wordpress_pass
+    env_file: .env
     volumes:
       - wordpress_data:/var/www/html
     ports:
       - "9000:9000"
 
   nginx:
-    build: ./requirements/nginx
+    build: 
+      context: ./requirements/nginx
+      args:
+        DOMAIN: ${DOMAIN}
+    env_file: .env 
     container_name: nginx
     restart: always
     ports:
@@ -43,8 +43,38 @@ services:
       - wordpress_data:/var/www/html
     depends_on:
       - wordpress
+    secrets:
+      - db_user_password
 
 # declare named volumes for persistent data
 volumes:
   mariadb_data:
+    driver: local
+    # we want to map (bind) a host folder into container, so:
+    driver_opts:
+      # none means just a folder (not a special fielsystem type)
+      type: none
+      # bind mount (host -> container)
+      o: bind
+      device: ${USER_HOME}/data/mariadb
+
   wordpress_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${USER_HOME}/data/wordpress
+
+secrets:
+  db_user_password:
+    file: ../secrets/db_user_password.txt
+  db_admin_password:
+    file: ../secrets/db_admin_password.txt
+  db_root_password:
+    file: ../secrets/db_root_password.txt
+
+    
+# testing restart:always
+# docker ps  # get container name
+# docker kill wordpress
+# after a few seconds, docker ps should show the container relaunched
