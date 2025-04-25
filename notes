@@ -1,6 +1,9 @@
 VOMLUME = db and wordpress VOLUMES live outside of docker and persist outside of their isntances, so website
 can hold images and text and stuff without losing intra-session
 
-.env used when?
+first make VM w VirtualBox (with GUI, so not alpie, debian). Need to use VM because need to be root, can't on school machines.
 
-first make VM w VirtualBox (with GUI). Need to because need to be root. Don't have that at school.
+TODO: 
+1. make sure onyl admins can edit website, normal users can'text
+2. make sure containers relaunch on kill or stop in VM on campus, at home they don'text
+3. make sure FROM alpine:x.x.x.x is the start of each dockerfile, currently php-fpm used in wordpress

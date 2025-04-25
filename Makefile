@@ -3,6 +3,7 @@ LOGIN = $(shell whoami)
 # Project paths
 DOCKER_DIR = srcs
 COMPOSE = docker compose -f $(DOCKER_DIR)/docker-compose.yml
+# COMPOSE = docker compose --ansi never -f $(DOCKER_DIR)/docker-compose.yml
 BUILD = $(COMPOSE) build
 UP = $(COMPOSE) up
 DOWN = $(COMPOSE) down
@@ -10,6 +11,9 @@ RMV = docker volume rm -f
 VOLUMES = $(shell docker volume ls -qf name=srcs_)
 IMAGES = $(shell docker images -q srcs-* 2>/dev/null)
 SECRETS = $(shell docker secret ls -q 2>/dev/null)
+
+# make -> make re
+.DEFAULT_GOAL := re
 
 create-folders: #-p for safety, @ makes output silent
 	@mkdir -p /home/$(LOGIN)/data/mariadb
@@ -34,7 +38,9 @@ clean:
 
 # Nuke all volumes and images
 fclean: down
+ifneq ($(strip $(VOLUMES)),)
 	$(RMV) $(VOLUMES)
+endif
 	-docker rmi -f $(IMAGES)
 	@rm -rf /home/$(LOGIN)/data
 

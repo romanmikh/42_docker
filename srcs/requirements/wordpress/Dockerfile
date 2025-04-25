@@ -3,6 +3,12 @@
 # alpine is lightweight, no GUI
 FROM php:8.2.28-fpm-alpine
 
+# below is equivalent beginning with FROM alpine:x.x.x, but is more heavyweight
+# FROM alpine:3.20.6
+
+# # Install PHP and FPM manually
+# RUN apk add --no-cache php82 php82-fpm php82-mysqli php82-session php82-json php82-mbstring php82-curl php82-dom php82-opcache php82-phar php82-tokenizer php82-xml php82-zlib
+
 
 # Install common dependencies
 RUN apk add --no-cache \
@@ -67,3 +73,5 @@ CMD ["php-fpm", "-F"]
         # sudo docker ps (from new terminal, get the container ID)
         # sudo docker stop <container_id>
         # dies immediately, even says 'bye-bye!'
+
+        
