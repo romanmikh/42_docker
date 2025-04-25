@@ -8,6 +8,7 @@
 -- Host: %, means that the user can connect from any host
 
 CREATE DATABASE IF NOT EXISTS ${MYSQL_DATABASE};
+ALTER USER 'root'@'localhost' IDENTIFIED BY '${ROOT_PASS}';
 
 -- main WordPress user
 CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'%' IDENTIFIED BY '${USER_PASS}';

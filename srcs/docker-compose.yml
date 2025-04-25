@@ -1,4 +1,7 @@
 # composes multiple containers 
+# docker compose automatically creates a bridge network
+# docker network ls
+# docker network inspect srcs_default
 
 # recommended baseline, widely compatible version
 version: '3.8'
@@ -6,11 +9,14 @@ version: '3.8'
 services:
   mariadb:
     build: ./requirements/mariadb
+    image: mariadb
     container_name: mariadb
     restart: always
     env_file: .env
     volumes:
       - mariadb_data:/var/lib/mysql
+    networks:
+      - srcs_network
     secrets:
       - db_user_password
       - db_admin_password
@@ -18,6 +24,7 @@ services:
 
   wordpress:
     build: ./requirements/wordpress
+    image: wordpress
     container_name: wordpress
     restart: always
     # tells WordPress to connect to MariaDB container
@@ -28,21 +35,31 @@ services:
       - wordpress_data:/var/www/html
     ports:
       - "9000:9000"
+    networks:
+      - srcs_network
+    secrets:
+      - db_user_password
+
 
   nginx:
     build: 
       context: ./requirements/nginx
       args:
         DOMAIN: ${DOMAIN}
+    image: nginx
     env_file: .env 
     container_name: nginx
     restart: always
+    # LHS host machine's port, RHS container's port
     ports:
       - "443:443"
     volumes:
       - wordpress_data:/var/www/html
     depends_on:
       - wordpress
+    networks:
+      - srcs_network
+
     secrets:
       - db_user_password
 
@@ -64,6 +81,10 @@ volumes:
       type: none
       o: bind
       device: ${USER_HOME}/data/wordpress
+
+networks:
+  srcs_network:
+    driver: bridge
 
 secrets:
   db_user_password:

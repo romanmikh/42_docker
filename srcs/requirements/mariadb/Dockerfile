@@ -3,7 +3,7 @@
 # persistent volume for data (outside of container)
 # env variables for configuration, no hardcoded passwords. MariaDB expects these
 
-FROM alpine:3.18
+FROM alpine:3.20.6 
 
 # apk = alpine package manager, --no-cache keeps image size small (no temp files)
 # mariadb = server, mariadb-client = client binary needed to execute SQL
@@ -15,8 +15,8 @@ COPY tools/ /docker-entrypoint-initdb.d/
 # COPY tools/init.sql /init.sql
 COPY tools/init.sql.template /init.sql.template
 # needed to replace ${} with env vars
-RUN apk add --no-cache gettext \
-    && envsubst < /init.sql.template > /init.sql
+RUN apk add --no-cache gettext 
+    # && envsubst < /init.sql.template > /init.sql
 
 COPY tools/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
@@ -36,12 +36,14 @@ COPY conf/my.cnf /etc/my.cnf
 # Docker will later mount a volume here for persistence
 RUN chown -R mysql:mysql /var/lib/mysql
 
+# delcarative only, does not open ports to internet
 EXPOSE 3306
 
 # Start the daemon, then run init.sql to set up DB + user
 USER mysql
-# CMD ["sh", "-c", "mysqld --user=mysql --datadir=/var/lib/mysql & sleep 5 && mysql -u root < /init.sql && tail -f /dev/null"]
-CMD ["sh", "-c", "mysqld --user=mysql --datadir=/var/lib/mysql --init-file=/init.sql"]
+CMD ["sh", "-c", "mysqld --user=mysql --datadir=/var/lib/mysql --init-file=/tmp/init.sql"]
+
+
 
 
 # Run:

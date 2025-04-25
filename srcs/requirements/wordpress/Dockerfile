@@ -1,47 +1,26 @@
 # php: is ... an official image from Docker (maintained by PHP team)
 # FPM needed for running PHP applications BUT doesn't speak HTTP, so NGINX needed
 # alpine is lightweight, no GUI
-FROM php:8.2-fpm-alpine
-
+FROM php:8.2.28-fpm-alpine
 
 
 # Install common dependencies
-# RUN apk add --no-cache \
-#     curl \
-#     mysql-client \
-#     bash \
-#     php-mysqli \
-#     php-phar \
-#     php-json \
-#     php-mbstring \
-#     php-session \
-#     php-zlib \
-#     php-curl \
-#     php-gd \
-#     php-dom \
-#     php-exif \
-#     php-opcache \
-#     php-fileinfo \
-#     php-tokenizer \
-#     php-xml \
-#     php-ctype
-
 RUN apk add --no-cache \
-bash \
-curl \
-mariadb-client \
-libpng-dev \
-libjpeg-turbo-dev \
-libwebp-dev \
-libxpm-dev \
-freetype-dev \
-libzip-dev \
-libxml2-dev \
-oniguruma-dev \
-zlib-dev \
-autoconf \
-g++ \
-make
+    bash \
+    curl \
+    mariadb-client \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    libwebp-dev \
+    libxpm-dev \
+    freetype-dev \
+    libzip-dev \
+    libxml2-dev \
+    oniguruma-dev \
+    zlib-dev \
+    autoconf \
+    g++ \
+    make
 
 # extension to meet requirements in browser
 RUN docker-php-ext-install mysqli zip xml pdo pdo_mysql gd mbstring
@@ -54,24 +33,9 @@ RUN curl -O https://wordpress.org/latest.tar.gz && \
     tar -xzf latest.tar.gz --strip-components=1 && \
     rm latest.tar.gz
 
-# Fix permissions
-# RUN chown -R www-data:www-data /var/www/html
-
-# COPY tools/phpinfo.php /var/www/html/phpinfo.php
-
-# RUN echo "display_errors = On" >> /usr/local/etc/php/php.ini \
-#     && echo "log_errors = On" >> /usr/local/etc/php/php.ini \
-#     && echo "error_log = /proc/self/fd/2" >> /usr/local/etc/php/php.ini
-
-# EXPOSE 9000
-
-# # Start PHP-FPM server (CMD -> on container start)
-# # docker run -it php:8.2-fpm-alpine php-fpm  <- equicalent of CMD ["php-fpm"]
-# CMD ["php-fpm"]
-
 RUN chown -R www-data:www-data /var/www/html
 
-# Add PHP info test page
+# Add PHP info test pageEach Docker image must have the same name as its corresponding service.
 COPY tools/phpinfo.php /var/www/html/phpinfo.php
 
 # Log errors to stdout
@@ -79,8 +43,8 @@ RUN echo "display_errors = On" >> /usr/local/etc/php/php.ini \
     && echo "log_errors = On" >> /usr/local/etc/php/php.ini \
     && echo "error_log = /proc/self/fd/2" >> /usr/local/etc/php/php.ini
 
+# delcarative only, does not open ports to internet
 EXPOSE 9000
-# CMD ["php-fpm"]
 CMD ["php-fpm", "-F"]
 
 

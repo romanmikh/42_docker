@@ -5,7 +5,7 @@
 # expose port 443 only (not 80 (HTTP))
 # basically after this, we will have a working HTTPS server & website
 
-FROM alpine:3.18
+FROM alpine:3.20.6 
 
 RUN apk add --no-cache nginx openssl gettext
 
@@ -22,6 +22,7 @@ RUN mkdir -p /etc/nginx/ssl && \
     -keyout /etc/nginx/ssl/nginx.key \
     -out /etc/nginx/ssl/nginx.crt
 
+# delcarative only, does not open ports to internet
 EXPOSE 443
 
 # nginx -g "daemon off"
