@@ -10,3 +10,14 @@ log into mariadb with both root and user. currently "mysql -uwordpress_user -p" 
 2. make sure containers relaunch on kill or stop in VM on campus, at home they don'text
 3. make sure FROM alpine:x.x.x.x is the start of each dockerfile, currently php-fpm used in wordpress
 4. update rocky dependencies (docker volume inspect xxxx) is where this shows 
+
+
+
+If starting from a new VM:
+sudo apt install -y curl
+sudo apt-get remove docker docker-engine docker.io containerd runc
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+sudo mkdir -p /home/rocky/data/mariadb
+sudo mkdir -p /home/rocky/data/wordpress
+sudo make
