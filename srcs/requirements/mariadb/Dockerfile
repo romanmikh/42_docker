@@ -50,3 +50,9 @@ CMD ["sh", "-c", "mysqld --user=mysql --datadir=/var/lib/mysql --init-file=/tmp/
 # docker build -t mariadb_custom srcs/requirements/mariadb
 # this builds new image from Dockerfile, called mariadb_custom
 # path tells docker where to look for Dockerfile
+
+# to log into MariaDB from inside the container: 
+# docker compose up -d
+# docker compose ps
+# docker exec -it mariadb sh # opens shell inside mariadb
+# mysql -uwordpress_user -p

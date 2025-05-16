@@ -53,6 +53,9 @@ RUN echo "display_errors = On" >> /usr/local/etc/php/php.ini \
 EXPOSE 9000
 CMD ["php-fpm", "-F"]
 
+COPY tools/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
 
 
 # Run:
