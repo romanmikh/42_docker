@@ -1,18 +1,3 @@
-VOMLUME = db and wordpress VOLUMES live outside of docker and persist outside of their isntances, so website
-can hold images and text and stuff without losing intra-session
-
-first make VM w VirtualBox (with GUI, so not alpie, debian). Need to use VM because need to be root, can't on school machines.
-
-TODO: 
-0: both https://localhost and https://vboxuser.42.fr work
-log into mariadb with both root and user. currently "mysql -uwordpress_user -p" works with no pass only
-1. log in as admin (?) and make sure onyl admins can edit website, normal users can'text. 
-2. make sure containers relaunch on kill or stop in VM on campus, at home they don'text
-3. make sure FROM alpine:x.x.x.x is the start of each dockerfile, currently php-fpm used in wordpress
-4. update rocky dependencies (docker volume inspect xxxx) is where this shows 
-
-
-
 If starting from a new VM:
 sudo apt install -y curl
 sudo apt-get remove docker docker-engine docker.io containerd runc
@@ -21,3 +6,70 @@ sudo sh get-docker.sh
 sudo mkdir -p /home/rocky/data/mariadb
 sudo mkdir -p /home/rocky/data/wordpress
 sudo make
+
+
+sudo docker stop $(sudo docker ps -qa); sudo docker rm $(sudo docker ps -qa); sudo docker rmi -f $(sudo docker images -qa); sudo docker volume rm $(sudo docker volume ls -q); sudo docker network rm $(sudo docker network ls -q) 2>/dev/null
+- stops all containers, images, volumes & networks
+
+
+TODO: 
+0. log in as user, and log in as admin. Change admin username. User shouldn't be able to edit website, only comment
+1. make sure onyl admins can edit website, normal users can'text
+2. use penultimate version of wordpress 
+3. remove any ahrd-coded rocky/rmikhayl/etc.. (docker volume inspect xxxx) is where this shows. https://rocky.42.fr should work, https://login.42.fr should NOT
+4. mysql -u wordpress_user -p   make sure db_user_password is used, not empty entry. Empty is as anonymous user, not wordpress_user or as mrcoolguy. Doesn't see password atm, or even users maybe
+5. docker kill wordpress    <-- should relaunch wordpress
+6. both https://localhost and https://vboxuser.42.fr work
+
+
+Evaluation:
+1. General Instructions
+    - network: host wouldbypass Docker's network layer, giving container unallowed accesses
+    - --link in Makefile is a forbidden way to connect containers
+    - tail -f/sleep infinity are hacks to keep containers alive. Dangerous bc we need PID 1
+    - bash/sh could be used to run entire scripts -> outside of project spec
+
+2. Overview
+    - VMs emulate hardware, Docker uses the host OS kernel to emulate application environment
+    - it's perfectly replroducible on any machine with the same kernel
+    - docker compose composes multiple containers
+
+3. Setup
+    - curl http://rocky.42.fr               <-- should fail
+    - curl -k https://rocky.42.fr           <-- should return HTML
+    - openssl s_client -connect rocky.42.fr:443 -servername rocky.42.fr         <-- shows TLSv1.3/TLSv1.2
+    - CTRL+SHIFT+I -> TLS 1.3
+
+4. Basics
+    - image: mariadb. To demonstrate I'm building myself, I'd call it my_mariadb, since 'mariadb' is how we'd pull
+      from DockerHub. But we're building images ourselves (no 'pull' in my codebase), and the subject specifies
+      "The Docker images must have the same name as their corresponding service". All good
+
+5. Network
+    - sudo docker network ls
+    - network lets containers communicate by name instead of by IP. docker compose creates a bridged network
+
+6. NGINX
+    - sudo docker ps
+    - sudo curl -I http://rocky.42.fr       <-- should fail
+    - TSL proves website uses encrypted HTTPS communication between server & client (RSA key exchange)
+    
+7. Wordpress 
+    - sudo docker volume ls
+    - https://rocky/wp-login.php            <-- to log in as admin / user
+
+8. MaraDB
+    - including NGINX in MariaDB would break container modularity
+    - mysql -u wordpress_user -p            <-- to log into MariaDB
+    - SHOW DATABASES;
+    - USE wordpress_db;
+    - SHOW TABLES;
+9. Persistence
+    - 
+10. Other
+    - sudo docker kill wordpress
+
+
+Notes:
+1. VOMLUME = db and wordpress VOLUMES live outside of docker and persist outside of their isntances, so website
+can hold images and text and stuff without losing intra-session
