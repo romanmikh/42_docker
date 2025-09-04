@@ -4,7 +4,7 @@
 # docker network inspect srcs_default
 
 # recommended baseline, widely compatible version
-version: '3.8'
+# version: '3.8'
 
 services:
   mariadb:

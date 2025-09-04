@@ -41,8 +41,11 @@ fclean: down
 ifneq ($(strip $(VOLUMES)),)
 	$(RMV) $(VOLUMES)
 endif
-	-docker rmi -f $(IMAGES)
+ifneq ($(strip $(IMAGES)),)
+	docker rmi -f $(IMAGES)
+endif
 	@rm -rf /home/$(LOGIN)/data
+
 
 # Full reset
 re: fclean build up
