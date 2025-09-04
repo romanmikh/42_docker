@@ -35,8 +35,8 @@ Evaluation:
     - docker compose composes multiple containers
 
 3. Setup
-    - curl http://rocky.42.fr               <-- should fail
-    - curl -k https://rocky.42.fr           <-- should return HTML
+    - curl http://rocky.42.fr:80            <-- should fail
+    - curl -k https://rocky.42.fr           <-- should return HTML, -k tells nginx to ignore certificate errors & connect
     - openssl s_client -connect rocky.42.fr:443 -servername rocky.42.fr         <-- shows TLSv1.3/TLSv1.2
     - CTRL+SHIFT+I -> TLS 1.3
 
