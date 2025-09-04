@@ -36,7 +36,7 @@ sed -i \
   --path=/var/www/html --allow-root
 
 # --- users, always sync password ---
-/usr/bin/wp-cli.phar user update "$WP_USER"       --user_pass="$WP_USER_PASS"  --path=/var/www/html --allow-root
-/usr/bin/wp-cli.phar user update "$WP_ADMIN_USER" --user_pass="$WP_ADMIN_PASS" --path=/var/www/html --allow-root
+/usr/bin/wp-cli.phar user update "$WP_USER"       --user_pass="$WP_USER_PASS"  --skip-email --path=/var/www/html --allow-root
+/usr/bin/wp-cli.phar user update "$WP_ADMIN_USER" --user_pass="$WP_ADMIN_PASS" --skip-email --path=/var/www/html --allow-root
 
 exec /usr/sbin/php-fpm81 -F
