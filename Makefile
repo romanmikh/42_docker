@@ -1,9 +1,8 @@
-LOGIN = $(shell whoami)
+LOGIN = $(shell echo $${SUDO_USER:-$$USER})
 
 # Project paths
 DOCKER_DIR = srcs
 COMPOSE = docker compose -f $(DOCKER_DIR)/docker-compose.yml
-# COMPOSE = docker compose --ansi never -f $(DOCKER_DIR)/docker-compose.yml
 BUILD = $(COMPOSE) build
 UP = $(COMPOSE) up
 DOWN = $(COMPOSE) down
