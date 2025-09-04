@@ -17,7 +17,7 @@ DONE 0. log in as user, and log in as admin. Change admin username. User shouldn
 DONE 1. make sure onyl admins can edit website, normal users can'text
 DONE 2. use penultimate version of wordpress 
 DONE 4. explore mariadb, show users etc
-5. docker kill wordpress    <-- should relaunch wordpress
+DONE 5. restart:always on crash. Couldn't find a way to crash without kill
 999. change rocky -> rmikhayl in .env (docker volume inspect xxxx) is where this shows
 
 
