@@ -15,7 +15,7 @@ sudo docker stop $(sudo docker ps -qa); sudo docker rm $(sudo docker ps -qa); su
 TODO: 
 0. log in as user, and log in as admin. Change admin username. User shouldn't be able to edit website, only comment
 1. make sure onyl admins can edit website, normal users can'text
-2. use penultimate version of wordpress 
+DONE 2. use penultimate version of wordpress 
 3. remove any ahrd-coded rocky/rmikhayl/etc.. (docker volume inspect xxxx) is where this shows. https://rocky.42.fr should work, https://login.42.fr should NOT
 4. mysql -u wordpress_user -p   make sure db_user_password is used, not empty entry. Empty is as anonymous user, not wordpress_user or as mrcoolguy. Doesn't see password atm, or even users maybe
 5. docker kill wordpress    <-- should relaunch wordpress
