@@ -60,10 +60,12 @@ Evaluation:
 
 8. MaraDB
     - including NGINX in MariaDB would break container modularity
-    - mysql -u wordpress_user -p            <-- to log into MariaDB
+    - docker exec -it mariadb sh -lc 'mysql -uroot -p"$(cat /run/secrets/db_root_password)"' <-- to log into MariaDB
     - SHOW DATABASES;
     - USE wordpress_db;
     - SHOW TABLES;
+    - SELECT ID, user_login, user_email FROM wp_users;
+
 9. Persistence
     - 
 10. Other
