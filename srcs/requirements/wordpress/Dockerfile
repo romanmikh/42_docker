@@ -1,6 +1,10 @@
-FROM alpine:3.17
+# FPM needed for PHP apps but doesn't speak HTTP, so NGINX is needed
+# alpine = lightweight, no GUI
 
-# PHP 8.1 + deps (matches the working reference you shared)
+# 3.19 latest version
+FROM alpine:3.18 
+
+# install PHP 8.1 + extensions + mariadb client + curl
 RUN apk update && apk upgrade && apk add --no-cache \
     php81 php81-fpm php81-bcmath php81-bz2 php81-calendar php81-cli php81-ctype \
     php81-curl php81-dom php81-exif php81-fileinfo php81-gd php81-gmp \
@@ -10,19 +14,16 @@ RUN apk update && apk upgrade && apk add --no-cache \
     php81-sqlite3 php81-tokenizer php81-xml php81-xmlreader php81-xmlwriter \
     php81-xsl php81-zip php81-zlib mariadb-client curl ca-certificates
 
-# php-fpm listen on TCP for nginx upstream
+# php-fpm should listen on TCP for nginx upstream, and clear env must be off
 RUN sed -i 's|^listen = .*|listen = 0.0.0.0:9000|' /etc/php81/php-fpm.d/www.conf \
  && sed -i 's|^;*clear_env = .*|clear_env = no|' /etc/php81/php-fpm.d/www.conf
 
-# WP-CLI
-# RUN curl -L https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o /usr/local/bin/wp \
-#  && chmod +x /usr/local/bin/wp
-RUN apk add --no-cache curl && \
-    curl -fsSL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o /usr/bin/wp-cli.phar && \
-    chmod +x /usr/bin/wp-cli.phar
+# install wp-cli
+RUN curl -fsSL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o /usr/bin/wp-cli.phar \
+ && chmod +x /usr/bin/wp-cli.phar
 ENV WP_CLI_ALLOW_ROOT=1
 
-# WordPress in nginx docroot (no extra /wordpress subfolder)
+# download WordPress into nginx docroot
 WORKDIR /var/www/html
 RUN curl -L https://wordpress.org/latest.tar.gz -o /tmp/wp.tgz \
  && tar -xzf /tmp/wp.tgz --strip-components=1 -C /var/www/html \
@@ -30,82 +31,18 @@ RUN curl -L https://wordpress.org/latest.tar.gz -o /tmp/wp.tgz \
  && adduser -S -D -H -s /sbin/nologin www-data || true \
  && chown -R www-data:www-data /var/www/html
 
-# Optional test page
-COPY tools/phpinfo.php /var/www/html/phpinfo.php
-
-# PHP logging → stderr
+# php logs should go to stderr so docker picks them up
 RUN mkdir -p /etc/php81/conf.d \
  && { echo "display_errors=On"; echo "log_errors=On"; echo "error_log=/proc/self/fd/2"; } > /etc/php81/conf.d/zz-custom.ini
 
-# Your existing init script
+# copy in my entrypoint script
 COPY tools/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 EXPOSE 9000
+
+# entrypoint runs my init script (this will exec php-fpm in it)
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["/usr/sbin/php-fpm81","-F"]
-
-
-
-
-# # php: is ... an official image from Docker (maintained by PHP team)
-# # FPM needed for running PHP applications BUT doesn't speak HTTP, so NGINX needed
-# # alpine is lightweight, no GUI
-# FROM php:8.2.28-fpm-alpine
-
-# # below is equivalent beginning with FROM alpine:x.x.x, but is more heavyweight
-# # FROM alpine:3.20.6
-
-# # # Install PHP and FPM manually
-# # RUN apk add --no-cache php82 php82-fpm php82-mysqli php82-session php82-json php82-mbstring php82-curl php82-dom php82-opcache php82-phar php82-tokenizer php82-xml php82-zlib
-
-
-# # Install common dependencies
-# RUN apk add --no-cache \
-#     bash \
-#     curl \
-#     mariadb-client \
-#     libpng-dev \
-#     libjpeg-turbo-dev \
-#     libwebp-dev \
-#     libxpm-dev \
-#     freetype-dev \
-#     libzip-dev \
-#     libxml2-dev \
-#     oniguruma-dev \
-#     zlib-dev \
-#     autoconf \
-#     g++ \
-#     make
-
-# # extension to meet requirements in browser
-# RUN docker-php-ext-install mysqli zip xml pdo pdo_mysql gd mbstring
-
-# # Download WordPress
-# # WORKDIR is the directory where the command will be executed
-# # /var/www/html is the standard doc root for NGINX, WordPress expects this
-# WORKDIR /var/www/html
-# RUN curl -O https://wordpress.org/latest.tar.gz && \
-#     tar -xzf latest.tar.gz --strip-components=1 && \
-#     rm latest.tar.gz
-
-# RUN chown -R www-data:www-data /var/www/html
-
-# # Add PHP info test pageEach Docker image must have the same name as its corresponding service.
-# COPY tools/phpinfo.php /var/www/html/phpinfo.php
-
-# # Log errors to stdout
-# RUN echo "display_errors = On" >> /usr/local/etc/php/php.ini \
-#     && echo "log_errors = On" >> /usr/local/etc/php/php.ini \
-#     && echo "error_log = /proc/self/fd/2" >> /usr/local/etc/php/php.ini
-
-# # delcarative only, does not open ports to internet
-# EXPOSE 9000
-# CMD ["php-fpm", "-F"]
-
-# COPY tools/entrypoint.sh /entrypoint.sh
-# RUN chmod +x /entrypoint.sh
-# ENTRYPOINT ["/entrypoint.sh"]
 
 
 # # Run:
@@ -126,5 +63,3 @@ CMD ["/usr/sbin/php-fpm81","-F"]
 #         # sudo docker ps (from new terminal, get the container ID)
 #         # sudo docker stop <container_id>
 #         # dies immediately, even says 'bye-bye!'
-
-        
