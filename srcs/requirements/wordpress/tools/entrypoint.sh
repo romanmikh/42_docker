@@ -30,9 +30,37 @@ if command -v nc >/dev/null 2>&1; then
   i=0; until nc -z "${HOST}" "${PORT}" 2>/dev/null || [ $i -ge 30 ]; do i=$((i+1)); sleep 1; done
 fi
 
+/usr/bin/wp-cli.phar core is-installed --path=/var/www/html --allow-root || \
+/usr/bin/wp-cli.phar core install \
+  --url="https://${DOMAIN}" \
+  --title="${WP_TITLE}" \
+  --admin_user="${WP_ADMIN_USER}" \
+  --admin_password="${WP_ADMIN_PASS}" \
+  --admin_email="${WP_ADMIN_EMAIL}" \
+  --skip-email \
+  --path=/var/www/html \
+  --allow-root
+
+# subscriber (idempotent)
+ /usr/bin/wp-cli.phar user get "$WP_USER" \
+   --path=/var/www/html --allow-root >/dev/null 2>&1 || \
+ /usr/bin/wp-cli.phar user create "$WP_USER" "$WP_USER_EMAIL" \
+   --user_pass="$WP_USER_PASS" --role=subscriber \
+   --path=/var/www/html --allow-root
+
+# admin safety net (idempotent)
+ /usr/bin/wp-cli.phar user get "$WP_ADMIN_USER" \
+   --path=/var/www/html --allow-root >/dev/null 2>&1 || \
+ /usr/bin/wp-cli.phar user create "$WP_ADMIN_USER" "$WP_ADMIN_EMAIL" \
+   --user_pass="$WP_ADMIN_PASS" --role=administrator \
+   --path=/var/www/html --allow-root
+
+ /usr/bin/wp-cli.phar user update "$WP_USER" --user_pass="$WP_USER_PASS" \
+   --path=/var/www/html --allow-root
+ /usr/bin/wp-cli.phar user update "$WP_ADMIN_USER" --user_pass="$WP_ADMIN_PASS" \
+   --path=/var/www/html --allow-root
+
 exec /usr/sbin/php-fpm81 -F
-
-
 
 
 

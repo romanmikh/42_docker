@@ -15,8 +15,12 @@ RUN sed -i 's|^listen = .*|listen = 0.0.0.0:9000|' /etc/php81/php-fpm.d/www.conf
  && sed -i 's|^;*clear_env = .*|clear_env = no|' /etc/php81/php-fpm.d/www.conf
 
 # WP-CLI
-RUN curl -L https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o /usr/local/bin/wp \
- && chmod +x /usr/local/bin/wp
+# RUN curl -L https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o /usr/local/bin/wp \
+#  && chmod +x /usr/local/bin/wp
+RUN apk add --no-cache curl && \
+    curl -fsSL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o /usr/bin/wp-cli.phar && \
+    chmod +x /usr/bin/wp-cli.phar
+ENV WP_CLI_ALLOW_ROOT=1
 
 # WordPress in nginx docroot (no extra /wordpress subfolder)
 WORKDIR /var/www/html
