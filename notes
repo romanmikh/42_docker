@@ -1,6 +1,9 @@
 # https://github.com/Forstman1/inception-42
 
 
+TODO: 
+1. unmap make from make re, no persistence atm
+
 
 If starting from a new VM:
 sudo apt install -y curl

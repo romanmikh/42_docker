@@ -11,8 +11,7 @@ VOLUMES = $(shell docker volume ls -qf name=srcs_)
 IMAGES = $(shell docker images -q srcs-* 2>/dev/null)
 SECRETS = $(shell docker secret ls -q 2>/dev/null)
 
-# make -> make re
-.DEFAULT_GOAL := re
+.DEFAULT_GOAL := default
 
 create-folders: #-p for safety, @ makes output silent
 	@mkdir -p /home/$(LOGIN)/data/mariadb
@@ -48,3 +47,5 @@ endif
 
 # Full reset
 re: fclean build up
+
+default: build up
