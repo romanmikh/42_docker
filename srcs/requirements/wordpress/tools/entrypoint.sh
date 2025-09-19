@@ -2,6 +2,8 @@
 
 # --- secrets/env ---
 WORDPRESS_DB_PASSWORD="$(cat /run/secrets/db_user_password)"
+WP_ADMIN_PASS="$(cat /run/secrets/wp_admin_password)"
+WP_USER_PASS="$(cat /run/secrets/wp_user_password)"
 
 # --- wp-config.php ---
 cp /var/www/html/wp-config-sample.php /var/www/html/wp-config.php  # overwrite config for each run

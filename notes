@@ -3,8 +3,8 @@ sudo apt install -y curl
 sudo apt-get remove docker docker-engine docker.io containerd runc
 curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
-sudo mkdir -p /home/rocky/data/mariadb
-sudo mkdir -p /home/rocky/data/wordpress
+sudo mkdir -p /home/rmikhayl/data/mariadb
+sudo mkdir -p /home/rmikhayl/data/wordpress
 sudo make
 
 Subject's version:
@@ -15,7 +15,7 @@ More thorough version:
 docker ps -qa|xargs -r docker stop; docker ps -qa|xargs -r docker rm -f; docker images -qa|xargs -r docker rmi -f; docker volume ls -q|xargs -r docker volume rm -f; docker network ls --format '{{.Name}}'|grep -vE '^(bridge|host|none)$'|xargs -r docker network rm; docker builder prune -af
 docker compose -f srcs/docker-compose.yml down
 docker volume rm -f srcs_wordpress_data srcs_mariadb_data
-sudo rm -rf /home/rocky/data/wordpress /home/rocky/data/mariadb
+sudo rm -rf /home/rmikhayl/data/wordpress /home/rmikhayl/data/mariadb
 
 
 
@@ -25,7 +25,7 @@ DONE 1. make sure onyl admins can edit website, normal users can'text
 DONE 2. use penultimate version of wordpress 
 DONE 4. explore mariadb, show users etc
 DONE 5. restart:always on crash. Couldn't find a way to crash without kill
-999. change rocky -> rmikhayl in .env (docker volume inspect xxxx) is where this shows
+999. change rmikhayl -> rmikhayl in .env (docker volume inspect xxxx) is where this shows
 
 
 Evaluation:
@@ -41,9 +41,9 @@ Evaluation:
     - docker compose composes multiple containers
 
 3. Setup
-    - curl http://rocky.42.fr:80            <-- should fail
-    - curl -k https://rocky.42.fr           <-- should return HTML, -k tells nginx to ignore certificate errors & connect
-    - openssl s_client -connect rocky.42.fr:443 -servername rocky.42.fr         <-- shows TLSv1.3/TLSv1.2
+    - curl http://rmikhayl.42.fr:80            <-- should fail
+    - curl -k https://rmikhayl.42.fr           <-- should return HTML, -k tells nginx to ignore certificate errors & connect
+    - openssl s_client -connect rmikhayl.42.fr:443 -servername rmikhayl.42.fr         <-- shows TLSv1.3/TLSv1.2
     - CTRL+SHIFT+I -> TLS 1.3
 
 4. Basics
@@ -57,12 +57,12 @@ Evaluation:
 
 6. NGINX
     - sudo docker ps
-    - sudo curl -I http://rocky.42.fr       <-- should fail
+    - sudo curl -I http://rmikhayl.42.fr       <-- should fail
     - TSL proves website uses encrypted HTTPS communication between server & client (RSA key exchange)
     
 7. Wordpress 
     - sudo docker volume ls
-    - https://rocky/wp-login.php            <-- to log in as admin / user
+    - https://rmikhayl.42.fr/wp-login.php            <-- to log in as admin / user
 
 8. MaraDB
     - including NGINX in MariaDB would break container modularity
